@@ -51,8 +51,8 @@ listenButton.onclick = () => {
   console.log("Listening...");
 };
 
-// Has side effects
-RECOGNITION.onresult = event => {
+// Has side effects to both DOM and to the computer audio
+const presentRecognitionResults = event => {
   const lastResult = event.results[event.results.length - 1];
   const { transcript, confidence } = lastResult[0];
 
@@ -65,6 +65,8 @@ RECOGNITION.onresult = event => {
   // speakText(transcript);
   speakText(reversedTranscript);
 
-  console.log(`Speech: ${transcript}`);
+  // Diagnostic info
   console.log("Confidence: " + confidence);
 };
+
+RECOGNITION.onresult = presentRecognitionResults;
