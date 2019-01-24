@@ -1,2 +1,0 @@
-# speechmirror
-Created with CodeSandbox
