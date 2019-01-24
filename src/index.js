@@ -29,21 +29,41 @@ const listenButton = document.getElementById("listenButton");
 const transcriptionBox = document.getElementById("transcription");
 const reversedBox = document.getElementById("reversed");
 
-const recognition = getSpeechRecognition();
+// Speech Globals
+const RECOGNITION = getSpeechRecognition();
+const SYNTH = window.speechSynthesis;
+const VOICES = SYNTH.getVoices();
+console.log(`There are ${VOICES.length} voices available.`);
+const DEFAULT_VOICE = VOICES[0]; // can select other voices later
+
+// Has side effect
+const speakText = (message, voice = DEFAULT_VOICE, synth = SYNTH) => {
+  const utterance = new window.SpeechSynthesisUtterance(message);
+  utterance.voice = voice;
+  // Can optionally control pitch, rate on the utterance too
+  // utterance.pitch, utterance.rate (0.5 - 2)
+  utterance.rate = 0.6;
+  synth.speak(utterance);
+};
 
 listenButton.onclick = () => {
-  recognition.start();
+  RECOGNITION.start();
   console.log("Listening...");
 };
 
 // Has side effects
-recognition.onresult = event => {
+RECOGNITION.onresult = event => {
   const lastResult = event.results[event.results.length - 1];
   const { transcript, confidence } = lastResult[0];
 
   // Side effects that pull from the global objects...
   transcriptionBox.innerHTML = transcript;
-  reversedBox.innerHTML = reverseString(transcript);
+
+  const reversedTranscript = reverseString(transcript);
+  reversedBox.innerHTML = reversedTranscript;
+
+  // speakText(transcript);
+  speakText(reversedTranscript);
 
   console.log(`Speech: ${transcript}`);
   console.log("Confidence: " + confidence);
