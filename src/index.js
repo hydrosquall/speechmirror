@@ -1,3 +1,5 @@
+import { fromEvent, merge } from "rxjs";
+
 import "./styles.css";
 
 // TODO: Use this to make a lightweight Vue app
@@ -47,10 +49,15 @@ const speakText = (message, voice = DEFAULT_VOICE, synth = SYNTH) => {
   synth.speak(utterance);
 };
 
-listenButton.onclick = () => {
+// Make the trigger either pushing a key or clicking the button.
+const buttonClicks$ = fromEvent(listenButton, "click");
+const keyPress$ = fromEvent(document, "keypress");
+const recognitionTriggers$ = merge(buttonClicks$, keyPress$);
+
+recognitionTriggers$.subscribe(() => {
   RECOGNITION.start();
   console.log("Listening...");
-};
+});
 
 // Has side effects to both DOM and to the computer audio
 const presentRecognitionResults = event => {
